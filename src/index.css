@@ -1,0 +1,173 @@
+/* Design tokens — dark theme, single accent */
+:root {
+  --bg: #0a0a0b;
+  --bg-elevated: #111113;
+  --surface: #18181b;
+  --border: #27272a;
+  --text: #fafafa;
+  --text-muted: #a1a1aa;
+  --accent: #f97316;
+  --accent-hover: #ea580c;
+  --accent-muted: rgba(249, 115, 22, 0.15);
+
+  --font-heading: 'Syne', sans-serif;
+  --font-hero-title: 'Outfit', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --space-4xl: 6rem;
+
+  --radius: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* Smooth scroll + custom scrollbar — orange accent */
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+html::-webkit-scrollbar {
+  width: 10px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+  border: 2px solid var(--bg);
+}
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-hover);
+}
+html::-webkit-scrollbar-thumb:active {
+  background: var(--accent-hover);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+/* Mobile layout — centered content, no horizontal overflow */
+@media (max-width: 640px) {
+  html, body {
+    overflow-x: hidden;
+  }
+  main {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  main > section {
+    width: 100%;
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .header-nav nav {
+    padding-left: var(--space-md);
+    padding-right: var(--space-md);
+  }
+  .projects-title {
+    text-align: center;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Scroll reveal animations */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease-out,
+    transform 0.6s ease-out;
+}
+.scroll-reveal.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.scroll-reveal.scroll-reveal--left {
+  transform: translateX(-48px);
+}
+.scroll-reveal.scroll-reveal--left.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.scroll-reveal.scroll-reveal--right {
+  transform: translateX(48px);
+}
+.scroll-reveal.scroll-reveal--right.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+.scroll-reveal.scroll-reveal--down {
+  transform: translateY(-40px);
+}
+.scroll-reveal.scroll-reveal--down.scroll-reveal--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .scroll-reveal.scroll-reveal--left,
+  .scroll-reveal.scroll-reveal--right,
+  .scroll-reveal.scroll-reveal--down {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Header nav — accent when scrolled */
+.header-nav--scrolled {
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(249, 115, 22, 0.15),
+    0 0 32px rgba(249, 115, 22, 0.06);
+}
+
+/* Utility */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

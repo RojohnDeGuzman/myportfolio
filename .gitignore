@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+*.local
+
+# Environment and secrets (never commit)
+.env
+.env.local
+.env.*.local
+
+# Editor and OS
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Vite / TypeScript
+*.tsbuildinfo
+
+# Optional: uncomment if you use npm / lockfiles
+# package-lock.json
+# yarn.lock
+# pnpm-lock.yaml
