@@ -31,7 +31,7 @@ export function BackgroundEffects() {
           filter: 'blur(40px)',
           top: '-20%',
           left: '-10%',
-          animation: 'float1 20s ease-in-out infinite',
+          animation: 'float1 14s ease-in-out infinite',
         }}
       />
       <div
@@ -45,7 +45,7 @@ export function BackgroundEffects() {
           filter: 'blur(50px)',
           top: '40%',
           right: '-15%',
-          animation: 'float2 25s ease-in-out infinite',
+          animation: 'float2 18s ease-in-out infinite',
         }}
       />
       <div
@@ -59,21 +59,7 @@ export function BackgroundEffects() {
           filter: 'blur(45px)',
           bottom: '-10%',
           left: '20%',
-          animation: 'float3 22s ease-in-out infinite',
-        }}
-      />
-      {/* Subtle grid */}
-      <div
-        style={{
-          position: 'absolute',
-          inset: 0,
-          backgroundImage: `
-            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-          maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%)',
-          WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%)',
+          animation: 'float3 16s ease-in-out infinite',
         }}
       />
       {/* Soft vignette */}
@@ -87,17 +73,17 @@ export function BackgroundEffects() {
       <style>{`
         @keyframes float1 {
           0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(5%, 8%) scale(1.05); }
-          66% { transform: translate(-4%, -5%) scale(0.98); }
+          33% { transform: translate(12%, 18%) scale(1.12); }
+          66% { transform: translate(-10%, -12%) scale(0.92); }
         }
         @keyframes float2 {
           0%, 100% { transform: translate(0, 0) scale(1); }
-          33% { transform: translate(-8%, -6%) scale(1.08); }
-          66% { transform: translate(4%, 4%) scale(0.95); }
+          33% { transform: translate(-18%, -14%) scale(1.15); }
+          66% { transform: translate(14%, 12%) scale(0.88); }
         }
         @keyframes float3 {
           0%, 100% { transform: translate(0, 0) scale(1); }
-          50% { transform: translate(6%, -7%) scale(1.06); }
+          50% { transform: translate(14%, -16%) scale(1.14); }
         }
         @media (prefers-reduced-motion: reduce) {
           .bg-orb { animation: none !important; }
