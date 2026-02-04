@@ -198,8 +198,19 @@ export function Contact() {
           50% { opacity: 0; }
         }
         @media (max-width: 480px) {
-          .contact-links { flex-direction: column; }
-          .contact-link { justify-content: center; }
+          .contact-card {
+            padding: var(--space-3xl) var(--space-lg);
+          }
+          .contact-links {
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+          }
+          .contact-link {
+            justify-content: center;
+            width: 100%;
+            max-width: 20rem;
+          }
         }
         @media (prefers-reduced-motion: reduce) {
           .typing-cursor { animation: none; }
