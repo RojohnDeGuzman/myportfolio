@@ -20,7 +20,7 @@ const contactItemBase = {
   textDecoration: 'none',
   color: 'var(--text)',
   transition: 'opacity 0.3s ease-out, transform 0.3s ease-out, color 0.2s, background 0.2s, border-color 0.2s',
-  boxSizing: 'border-box',
+  boxSizing: 'border-box' as const,
 }
 
 const iconSize = 18
