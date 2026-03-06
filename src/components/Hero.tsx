@@ -132,8 +132,17 @@ export function Hero() {
           }
         }
         @media (max-width: 640px) {
-          .hero-section { justify-content: center; text-align: center; }
-          .hero-content { display: flex; flex-direction: column; align-items: center; }
+          .hero-section {
+            justify-content: center;
+            text-align: center;
+            padding: var(--space-3xl) var(--space-md) !important;
+          }
+          .hero-content { display: flex; flex-direction: column; align-items: center; text-align: center; }
+          .hero-content p {
+            font-size: 1rem !important;
+            text-align: center;
+            max-width: 100%;
+          }
           .hero-title {
             white-space: normal !important;
             text-align: center;

@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react'
 
 const NAV = [
   { id: 'about', label: 'About' },
+  { id: 'how-i-work', label: 'How I work' },
+  { id: 'tech-stack', label: 'Tech' },
+  { id: 'certifications', label: 'Certs' },
   { id: 'projects', label: 'Projects' },
   { id: 'contact', label: 'Contact' },
 ]
@@ -21,7 +24,7 @@ export function Header() {
       const y = window.scrollY
       setScrolled(y > SCROLL_THRESHOLD)
       setAtTop(y <= AT_TOP_THRESHOLD)
-      const sectionIds = ['hero', 'about', 'projects', 'contact']
+      const sectionIds = ['hero', 'about', 'how-i-work', 'tech-stack', 'certifications', 'projects', 'contact']
       let activeId: string | null = null
       for (const id of sectionIds) {
         const el = document.getElementById(id)

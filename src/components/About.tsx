@@ -107,17 +107,31 @@ export function About() {
           transform: translateY(-2px);
         }
         @media (max-width: 640px) {
+          .about-section {
+            padding: var(--space-3xl) var(--space-md) !important;
+          }
+          .about-section h2 {
+            font-size: 1.375rem !important;
+            text-align: center;
+          }
           .about-grid {
             grid-template-columns: 1fr;
             gap: var(--space-lg);
+            text-align: center;
           }
           .about-grid > * { height: auto; }
+          .about-card {
+            padding: var(--space-lg) var(--space-md);
+          }
           .about-card p {
             text-align: center;
+            font-size: 0.9375rem !important;
+            line-height: 1.65;
           }
           .about-second-col {
             flex-direction: column;
             gap: var(--space-md);
+            align-items: stretch;
           }
           .about-expand-btn {
             display: flex;
@@ -126,7 +140,7 @@ export function About() {
             width: 100%;
             padding: var(--space-md) var(--space-lg);
             font-family: var(--font-body);
-            font-size: 0.9375rem;
+            font-size: 0.875rem !important;
             font-weight: 600;
             color: var(--accent);
             background: var(--surface);

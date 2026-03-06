@@ -71,10 +71,13 @@ body {
   min-height: 100vh;
 }
 
-/* Mobile layout — centered content, no horizontal overflow */
+/* Mobile layout — centered content, consistent padding and font sizes */
 @media (max-width: 640px) {
   html, body {
     overflow-x: hidden;
+  }
+  body {
+    font-size: 0.9375rem;
   }
   main {
     width: 100%;
@@ -83,14 +86,17 @@ body {
   }
   main > section {
     width: 100%;
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
+    padding: var(--space-3xl) var(--space-md);
     margin-left: auto;
     margin-right: auto;
   }
+  .header-nav {
+    padding-left: var(--space-md) !important;
+    padding-right: var(--space-md) !important;
+  }
   .header-nav nav {
-    padding-left: var(--space-md);
-    padding-right: var(--space-md);
+    padding-left: 0;
+    padding-right: 0;
   }
   .projects-title {
     text-align: center;

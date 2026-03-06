@@ -5,6 +5,7 @@ const PROJECTS = [
   {
     title: 'Organizational AI Bot',
     description: 'Designed and developed an AI bot that streamlined workflows and centralized operations across all departments at Casto Travel Philippines.',
+    builtFor: 'Internal use · All departments',
     details: `Core purpose
 Employees use an AI chatbot for common IT inquiries. The bot acts as Level 1 helpdesk support and is designed to help users from beginner to intermediate with their concerns step by step. It includes an escalation path: when the AI cannot help, users are directed to create a ticket or message the engineer on duty. The AI bot also has a company knowledge base with web scraping for company profile, HR inquiries, and GDS commands. It is a conversational AI trained for humanlike behavior.
 
@@ -18,6 +19,7 @@ A Windows application widget built with Python, PyQt5, and Flask, integrated wit
   {
     title: 'Call Tracking Solution',
     description: 'A web-based application for call and transaction tracking, built so that agents across departments can log and search client calls and transactions in one place, with automated reports for internal and client requirements.',
+    builtFor: '30+ departments · Internal & client reporting',
     details: `Core purpose
 Centralize call and transaction records for 30+ departments, each with different requirements. Each logged entry captures all required inputs from calls, emails, and chats so client requirements and coordination are properly tracked and auditable.
 
@@ -29,6 +31,7 @@ Internal web-based application built with PHP and Laravel, with login, call log 
   {
     title: 'HR Ticketing System',
     description: 'HRD Helpdesk is an internal HR service portal created for employees to submit and track HR-related requests.',
+    builtFor: 'Internal HR · Company-wide',
     details: `Core purpose
 One place for employees to request HR services (recruitment/onboarding, payroll, employee data, benefits/leave, policy, employee relations, reassignment, equipment/facilities, exit/offboarding) and for HR to receive, track, and respond. Reduces email back-and-forth and keeps requests organized.
 
@@ -40,6 +43,7 @@ Web-based application built with React, JavaScript, Node.js, and Express, with O
   {
     title: 'Company Website Redesign',
     description: 'Redesigned and built a corporate website as a modern, fast, and maintainable Next.js application.',
+    builtFor: 'Corporate · Public-facing',
     details: `Core purpose
 Introduce a more modern, engaging, and improved website for the company, with improved SEO, stronger security, and smooth UI and UX for users.
 
@@ -89,7 +93,7 @@ export function Projects() {
           gap: 'var(--space-lg)',
         }}
       >
-        {PROJECTS.map(({ title, description, details, tags }, index) => {
+        {PROJECTS.map(({ title, description, builtFor, details, tags }, index) => {
           const isExpanded = expandedIndex === index
           return (
             <li key={title}>
@@ -111,7 +115,7 @@ export function Projects() {
                   background: 'var(--surface)',
                   border: '1px solid var(--border)',
                   borderRadius: 'var(--radius-lg)',
-                  transition: 'border-color 0.2s, background 0.2s',
+                  transition: 'border-color 0.2s, background 0.2s, box-shadow 0.2s',
                   cursor: 'pointer',
                 }}
                 onMouseEnter={(e) => {
@@ -143,11 +147,26 @@ export function Projects() {
                         fontSize: '0.9375rem',
                         color: 'var(--text-muted)',
                         margin: 0,
-                        marginBottom: 'var(--space-md)',
+                        marginBottom: 'var(--space-sm)',
                       }}
                     >
                       {description}
                     </p>
+                    {builtFor && (
+                      <p
+                        className="project-built-for"
+                        style={{
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.8125rem',
+                          color: 'var(--accent)',
+                          fontWeight: 500,
+                          margin: 0,
+                          marginBottom: 'var(--space-md)',
+                        }}
+                      >
+                        Built for {builtFor}
+                      </p>
+                    )}
                     <div className="project-card-tags">
                       {tags.map((tag) => (
                         <span
@@ -240,12 +259,23 @@ export function Projects() {
           flex: 1;
           min-width: 0;
         }
+        .project-card:focus-visible {
+          outline: 2px solid var(--accent);
+          outline-offset: 2px;
+        }
         .project-card-tags {
           display: flex;
           gap: var(--space-sm);
           flex-wrap: wrap;
         }
         @media (max-width: 640px) {
+          .projects-section h2 {
+            font-size: 1.375rem !important;
+            text-align: center;
+          }
+          .project-card {
+            padding: var(--space-lg) var(--space-md) !important;
+          }
           .project-card-row {
             flex-direction: column;
             align-items: center;
@@ -256,8 +286,21 @@ export function Projects() {
             text-align: center;
             width: 100%;
           }
+          .project-card-content h3 {
+            font-size: 1.125rem !important;
+          }
+          .project-card-content p {
+            font-size: 0.875rem !important;
+          }
+          .project-built-for {
+            font-size: 0.75rem !important;
+            text-align: center;
+          }
           .project-card-tags {
             justify-content: center;
+          }
+          .project-card-tags span {
+            font-size: 0.6875rem !important;
           }
           .project-card-chevron {
             display: flex;
@@ -267,6 +310,9 @@ export function Projects() {
           }
           .project-card-details-inner {
             text-align: center;
+          }
+          .project-card-details-inner p {
+            font-size: 0.9375rem !important;
           }
         }
       `}</style>
