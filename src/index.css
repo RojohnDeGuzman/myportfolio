@@ -65,6 +65,7 @@ body {
   color: var(--text);
   background: var(--bg);
   -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
 }
 
 #root {
@@ -75,6 +76,7 @@ body {
 @media (max-width: 640px) {
   html, body {
     overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
   }
   body {
     font-size: 0.9375rem;
@@ -83,6 +85,7 @@ body {
     width: 100%;
     max-width: 100vw;
     overflow-x: hidden;
+    contain: layout;
   }
   main > section {
     width: 100%;
@@ -100,6 +103,9 @@ body {
   }
   .projects-title {
     text-align: center;
+  }
+  .scroll-reveal {
+    transition-duration: 0.45s;
   }
 }
 

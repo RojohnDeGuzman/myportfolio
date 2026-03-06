@@ -71,6 +71,9 @@ export function BackgroundEffects() {
         }}
       />
       <style>{`
+        .bg-orb {
+          will-change: transform;
+        }
         @keyframes float1 {
           0%, 100% { transform: translate(0, 0) scale(1); }
           33% { transform: translate(12%, 18%) scale(1.12); }
@@ -85,8 +88,15 @@ export function BackgroundEffects() {
           0%, 100% { transform: translate(0, 0) scale(1); }
           50% { transform: translate(14%, -16%) scale(1.14); }
         }
+        @media (max-width: 640px) {
+          .bg-orb {
+            filter: blur(24px);
+          }
+          .bg-orb-2 { filter: blur(28px); }
+          .bg-orb-3 { filter: blur(22px); }
+        }
         @media (prefers-reduced-motion: reduce) {
-          .bg-orb { animation: none !important; }
+          .bg-orb { animation: none !important; will-change: auto; }
         }
       `}</style>
     </div>
