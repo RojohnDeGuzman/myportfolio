@@ -2,6 +2,21 @@ import { useState, useRef, useEffect } from 'react'
 
 type Message = { role: 'user' | 'assistant'; content: string }
 
+/** Typewriter reveal for assistant messages */
+function TypewriterText({ text, speed = 18, onDone }: { text: string; speed?: number; onDone?: () => void }) {
+  const [revealed, setRevealed] = useState(0)
+  const isDone = revealed >= text.length
+  useEffect(() => {
+    if (isDone) {
+      onDone?.()
+      return
+    }
+    const t = setTimeout(() => setRevealed((r) => Math.min(r + 1, text.length)), speed)
+    return () => clearTimeout(t)
+  }, [revealed, text.length, speed, isDone, onDone])
+  return <>{text.slice(0, revealed)}{!isDone && <span className="chat-bot-caret" aria-hidden />}</>
+}
+
 const CHAT_API = `${import.meta.env.VITE_CHAT_API_BASE ?? ''}/api/chat`
 
 const INITIAL_MESSAGE: Message = {
@@ -115,8 +130,8 @@ export function ChatBot() {
         onClick={() => setOpen((o) => !o)}
         style={{
           position: 'fixed',
-          bottom: 'var(--space-xl)',
-          left: 'var(--space-xl)',
+          bottom: 'var(--floating-ui-inset)',
+          left: 'var(--floating-ui-inset)',
           zIndex: 40,
           width: 56,
           height: 56,
@@ -187,10 +202,10 @@ export function ChatBot() {
           aria-label="Chat about Rojohn"
           style={{
             position: 'fixed',
-            bottom: 'calc(var(--space-xl) + 64px)',
-            left: 'var(--space-xl)',
+            bottom: 'calc(var(--floating-ui-inset) + 64px)',
+            left: 'var(--floating-ui-inset)',
             zIndex: 39,
-            width: 'min(420px, calc(100vw - 2 * var(--space-xl)))',
+            width: 'min(420px, calc(100vw - 2 * var(--floating-ui-inset)))',
             maxHeight: 'min(520px, 70vh)',
             display: 'flex',
             flexDirection: 'column',
@@ -222,7 +237,7 @@ export function ChatBot() {
                 borderBottom: '1px solid var(--border)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }} className="chat-bot-header-title-block">
                 <div
                   style={{
                     width: 40,
@@ -240,11 +255,11 @@ export function ChatBot() {
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
                   </svg>
                 </div>
-                <div>
+                <div style={{ minWidth: 0 }}>
                   <div style={{ fontFamily: 'var(--font-hero-title)', fontWeight: 700, fontSize: '1rem', color: 'var(--text)', lineHeight: 1.2 }}>
                     Rojohn's Assistant
                   </div>
-                  <div style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
+                  <div className="chat-bot-header-subtitle" style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>
                     Ask me anything about his work
                   </div>
                 </div>
@@ -273,30 +288,39 @@ export function ChatBot() {
               display: 'flex',
               flexDirection: 'column',
               gap: 'var(--space-md)',
+              scrollBehavior: 'smooth',
             }}
           >
-            {messages.map((m, i) => (
+            {messages.map((m, i) => {
+              const isLast = i === messages.length - 1
+              const isAssistantReply = m.role === 'assistant' && i > 0
+              const useTypewriter = isLast && isAssistantReply && !loading
+              return (
               <div
                 key={i}
                 className={`chat-bot-msg chat-bot-msg--${m.role}`}
                 style={{
                   alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
-                  maxWidth: '90%',
+                  maxWidth: '85%',
                   padding: 'var(--space-sm) var(--space-md)',
-                  borderRadius: m.role === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                  borderRadius: m.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                   background: m.role === 'user' ? 'var(--accent)' : 'var(--bg-elevated)',
                   color: m.role === 'user' ? 'var(--bg)' : 'var(--text)',
                   fontFamily: 'var(--font-body)',
                   fontSize: '0.9375rem',
-                  lineHeight: 1.5,
+                  lineHeight: 1.55,
                   border: m.role === 'assistant' ? '1px solid var(--border)' : 'none',
-                  boxShadow: m.role === 'user' ? '0 2px 12px rgba(249, 115, 22, 0.25)' : 'none',
-                  ...(i === messages.length - 1 ? { animation: 'chat-msg-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards' } : {}),
+                  boxShadow: m.role === 'user' ? '0 2px 12px rgba(249, 115, 22, 0.28)' : '0 1px 3px rgba(0,0,0,0.06)',
+                  ...(isLast ? { animation: 'chat-msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards' } : {}),
                 }}
               >
-                {m.content}
+                {useTypewriter ? (
+                  <TypewriterText text={m.content} speed={14} />
+                ) : (
+                  m.content
+                )}
               </div>
-            ))}
+            )})}
 
             {/* Pop-up suggested prompts */}
             {showSuggestions && (
@@ -357,19 +381,22 @@ export function ChatBot() {
                 className="chat-bot-typing"
                 style={{
                   alignSelf: 'flex-start',
-                  padding: 'var(--space-md) var(--space-lg)',
-                  borderRadius: '14px 14px 14px 4px',
+                  padding: 'var(--space-sm) var(--space-md)',
+                  borderRadius: '16px 16px 16px 4px',
                   background: 'var(--bg-elevated)',
                   border: '1px solid var(--border)',
                   display: 'flex',
-                  gap: 5,
                   alignItems: 'center',
-                  animation: 'chat-msg-in 0.25s ease forwards',
+                  gap: 6,
+                  animation: 'chat-msg-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards',
                 }}
               >
-                <span className="chat-bot-dot" />
-                <span className="chat-bot-dot" />
-                <span className="chat-bot-dot" />
+                <span className="chat-bot-typing-dots">
+                  <span className="chat-bot-dot" />
+                  <span className="chat-bot-dot" />
+                  <span className="chat-bot-dot" />
+                </span>
+                <span className="chat-bot-typing-label">typing</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -503,12 +530,30 @@ export function ChatBot() {
           }
         }
         @keyframes chat-msg-in {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
+          from { opacity: 0; transform: translateY(10px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes chat-suggestions-in {
           from { opacity: 0; transform: translateY(8px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .chat-bot-caret {
+          display: inline-block;
+          width: 2px;
+          height: 1em;
+          margin-left: 1px;
+          vertical-align: -0.2em;
+          background: var(--accent);
+          animation: chat-caret-blink 0.8s step-end infinite;
+        }
+        @keyframes chat-caret-blink {
+          0%, 50% { opacity: 1; }
+          51%, 100% { opacity: 0; }
+        }
+        .chat-bot-typing-dots {
+          display: flex;
+          align-items: center;
+          gap: 5px;
         }
         .chat-bot-dot {
           width: 6px;
@@ -516,30 +561,88 @@ export function ChatBot() {
           border-radius: 50%;
           background: var(--text-muted);
         }
-        .chat-bot-dot:nth-child(1) { animation: chat-typing-bounce 0.6s ease-in-out 0s infinite; }
-        .chat-bot-dot:nth-child(2) { animation: chat-typing-bounce 0.6s ease-in-out 0.15s infinite; }
-        .chat-bot-dot:nth-child(3) { animation: chat-typing-bounce 0.6s ease-in-out 0.3s infinite; }
-        @keyframes chat-typing-bounce {
-          0%, 60%, 100% { transform: translateY(0); opacity: 0.6; }
-          30% { transform: translateY(-4px); opacity: 1; }
+        .chat-bot-dot:nth-child(1) { animation: chat-typing-wave 0.8s ease-in-out 0s infinite; }
+        .chat-bot-dot:nth-child(2) { animation: chat-typing-wave 0.8s ease-in-out 0.15s infinite; }
+        .chat-bot-dot:nth-child(3) { animation: chat-typing-wave 0.8s ease-in-out 0.3s infinite; }
+        @keyframes chat-typing-wave {
+          0%, 60%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
+          30% { transform: translateY(-5px) scale(1.2); opacity: 1; }
+        }
+        .chat-bot-typing-label {
+          font-family: var(--font-body);
+          font-size: 0.75rem;
+          color: var(--text-muted);
+          margin-left: 2px;
+          animation: chat-typing-pulse 1.2s ease-in-out infinite;
+        }
+        @keyframes chat-typing-pulse {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
         }
         @media (prefers-reduced-motion: reduce) {
           .chat-bot-backdrop, .chat-bot-panel, .chat-bot-msg, .chat-bot-typing, .chat-suggestions {
             animation: none !important;
           }
-          .chat-bot-dot { animation: none !important; }
+          .chat-bot-dot, .chat-bot-caret, .chat-bot-typing-label { animation: none !important; }
+          .chat-bot-caret { opacity: 1; }
         }
         @media (max-width: 640px) {
           .chat-bot-panel {
-            left: var(--space-md) !important;
-            right: var(--space-md) !important;
-            bottom: calc(var(--space-md) + 60px) !important;
+            left: var(--floating-ui-inset) !important;
+            right: var(--floating-ui-inset) !important;
             width: auto !important;
+            max-width: none !important;
+            bottom: calc(var(--floating-ui-inset) + 60px) !important;
             max-height: 75vh !important;
+            border-radius: 12px !important;
           }
           .chat-bot-trigger {
-            left: var(--space-md) !important;
-            bottom: var(--space-md) !important;
+            position: fixed !important;
+            left: var(--floating-ui-inset) !important;
+            right: auto !important;
+            margin-left: 0 !important;
+            bottom: var(--floating-ui-inset) !important;
+          }
+          .chat-bot-trigger:not([aria-expanded="true"]):hover {
+            transform: scale(1.05) !important;
+          }
+          .chat-bot-header .chat-bot-header-title-block {
+            min-width: 0;
+          }
+          .chat-bot-header .chat-bot-header-title-block .chat-bot-header-subtitle {
+            font-size: 0.6875rem;
+          }
+          .chat-bot-header > div:last-child {
+            padding: var(--space-sm) var(--space-md) !important;
+          }
+          .chat-bot-msg {
+            max-width: 85% !important;
+            font-size: 0.875rem !important;
+            padding: var(--space-sm) var(--space-md) !important;
+          }
+          .chat-bot-typing {
+            padding: var(--space-sm) var(--space-md) !important;
+            border-radius: 16px 16px 16px 4px !important;
+          }
+          .chat-bot-messages {
+            padding: var(--space-sm) !important;
+          }
+          .chat-suggestion-chip {
+            font-size: 0.75rem !important;
+            padding: var(--space-xs) var(--space-sm) !important;
+          }
+          .chat-bot-input-wrap {
+            padding: 4px 4px 4px var(--space-sm) !important;
+          }
+          .chat-bot-input {
+            font-size: 0.875rem !important;
+          }
+          .chat-bot-send {
+            width: 36px !important;
+            height: 36px !important;
+          }
+          .chat-bot-panel form {
+            padding: var(--space-sm) var(--space-md) !important;
           }
         }
       `}</style>

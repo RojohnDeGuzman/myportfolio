@@ -1,7 +1,8 @@
 /**
  * RAG knowledge base: chunks from Rojohn's portfolio (About, Projects, How I work, Certifications, Tech)
- * and from his resume (RojohnMichaelDeGuzman.pdf).
+ * and from his resume (RojohnMichaelDeGuzman.pdf). Includes FAQ (api/faq.ts) for common Q&A.
  */
+import { faqToChunks } from './faq'
 export type KnowledgeChunk = { id: string; section: string; text: string }
 
 export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
@@ -118,6 +119,8 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     section: 'resume',
     text: 'Resume — References: Juan Rafael Dela Fuente (+63 919 071 3639), Christopher Gomez (+63 917 875 2031).',
   },
+  // FAQ (common questions and your answers — edit api/faq.ts, then copy to api/chat.ts)
+  ...faqToChunks(),
 ]
 
 /** Simple keyword-based retrieval: score chunks by overlap with query words, return top k */

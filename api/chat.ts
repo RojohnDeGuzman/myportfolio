@@ -3,11 +3,14 @@ import type { VercelRequest, VercelResponse } from '@vercel/node'
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const MODEL = 'llama-3.1-8b-instant'
 
-const SYSTEM_PROMPT = `You are the portfolio assistant for Rojohn Michael De Guzman. You help visitors learn about Rojohn's experience, projects, skills, and how to contact him. Answer only based on the context below. Be concise, professional, and friendly. If the question is out of scope or you don't have enough context, say so and suggest they check the portfolio sections or contact Rojohn directly. Do not make up details.`
+const SYSTEM_PROMPT = `You are the portfolio assistant for Rojohn Michael De Guzman. You help visitors learn about Rojohn's experience, projects, skills, and how to contact him. Answer only based on the context below. When the context includes a "Common question" and "Answer" that matches what the user asked, use that answer as the main source and keep the wording close to it. Be concise, professional, and friendly. If the question is out of scope or you don't have enough context, say so and suggest they check the portfolio sections or contact Rojohn directly. Do not make up details.`
 
-// RAG knowledge inlined so Vercel serverless has no extra module dependency.
-// To update: edit api/knowledge.ts, then copy KNOWLEDGE_CHUNKS and retrieveChunks into this file.
-const KNOWLEDGE_CHUNKS: { id: string; section: string; text: string }[] = [
+// RAG knowledge: static chunks inlined; FAQ loaded from api/faq-questions.json + api/faq-answers.json
+// (Run "npm run faq" to be asked each question and save your answers.)
+import questions from './faq-questions.json'
+import answers from './faq-answers.json'
+
+const STATIC_KNOWLEDGE_CHUNKS: { id: string; section: string; text: string }[] = [
   { id: 'hero-1', section: 'intro', text: 'Rojohn Michael De Guzman. Experience in building automations and AI solutions that make IT and operations more efficient, innovative and adaptive to evolving AI and business needs.' },
   { id: 'about-1', section: 'about', text: 'Rojohn has hands-on experience designing and building internal tools, automation workflows, and websites that improve operational efficiency. He focuses on creating clear processes, minimizing errors, and enabling teams to work smarter through solutions such as AI, ticketing systems, and streamlined cross-team coordination.' },
   { id: 'about-2', section: 'about', text: 'He has experience with ticketing systems and remote-support tools, and handles both hardware and software. His experience as technical support, together with a background in programming and a BS in Computer Science, drives him to keep deepening his skills in innovation and automation to deliver process improvements and adapt to modern IT trends.' },
@@ -29,6 +32,13 @@ const KNOWLEDGE_CHUNKS: { id: string; section: string; text: string }[] = [
   { id: 'resume-edu-cert', section: 'resume', text: 'Resume — Certifications: System Administration and IT Infrastructure Services (Google); Machine Learning Using Python, ITIL® 4, Digital Security Fundamentals (Simplilearn); HP Customer Self-Repair (Phil-Data). Education: BS Computer Science, Eulogio "Amang" Rodriguez Institute of Science and Technology, 2016 – 2020.' },
   { id: 'resume-refs', section: 'resume', text: 'Resume — References: Juan Rafael Dela Fuente (+63 919 071 3639), Christopher Gomez (+63 917 875 2031).' },
 ]
+
+const faqChunks = (questions as string[]).map((q: string, i: number) => ({
+  id: `faq-${i + 1}`,
+  section: 'faq',
+  text: `Common question: ${q} Answer: ${(answers as string[])[i] || ''}`,
+}))
+const KNOWLEDGE_CHUNKS = [...STATIC_KNOWLEDGE_CHUNKS, ...faqChunks]
 
 function retrieveChunks(query: string, k = 5): { id: string; section: string; text: string }[] {
   const words = query.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter((w) => w.length > 1)

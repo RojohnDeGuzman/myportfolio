@@ -116,7 +116,7 @@ export function FloatingContactButton() {
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
-        padding: 'var(--space-xl)',
+        padding: '0 var(--floating-ui-inset) var(--floating-ui-inset) 0',
         pointerEvents: 'none',
       }}
     >
@@ -263,9 +263,6 @@ export function FloatingContactButton() {
           color: var(--text) !important;
         }
         @media (max-width: 640px) {
-          .floating-contact-wrapper {
-            padding: var(--space-md);
-          }
           .floating-contact {
             align-items: flex-end !important;
           }

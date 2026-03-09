@@ -23,6 +23,8 @@
   --space-3xl: 4rem;
   --space-4xl: 6rem;
 
+  --floating-ui-inset: var(--space-xl);
+
   --radius: 0.5rem;
   --radius-lg: 0.75rem;
 }
@@ -74,6 +76,9 @@ body {
 
 /* Mobile layout — centered content, consistent padding and font sizes */
 @media (max-width: 640px) {
+  :root {
+    --floating-ui-inset: var(--space-md);
+  }
   html, body {
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
