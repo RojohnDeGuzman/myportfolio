@@ -359,11 +359,13 @@ export function ChatBot() {
               flex: 1,
               minHeight: 0,
               overflowY: 'auto',
+              overflowX: 'hidden',
               padding: 'var(--space-md)',
               display: 'flex',
               flexDirection: 'column',
               gap: 'var(--space-md)',
               scrollBehavior: 'smooth',
+              WebkitOverflowScrolling: 'touch',
             }}
           >
             {messages.map((m, i) => {
@@ -394,7 +396,7 @@ export function ChatBot() {
                   lineHeight: 1.55,
                   border: m.role === 'assistant' ? '1px solid var(--border)' : 'none',
                   boxShadow: m.role === 'user' ? '0 2px 12px rgba(249, 115, 22, 0.28)' : '0 1px 3px rgba(0,0,0,0.06)',
-                  ...(isLast ? { animation: 'chat-msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards' } : {}),
+                  ...(isLast ? { animation: 'chat-msg-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards' } : {}),
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
@@ -522,7 +524,9 @@ export function ChatBot() {
                       flexWrap: 'nowrap',
                       gap: 'var(--space-sm)',
                       overflowX: 'auto',
-                      paddingBottom: 4,
+                      overflowY: 'visible',
+                      paddingTop: 8,
+                      paddingBottom: 8,
                       scrollbarGutter: 'stable',
                     }}
                   >
@@ -542,7 +546,7 @@ export function ChatBot() {
                           border: '1px solid var(--border)',
                           borderRadius: '999px',
                           cursor: 'pointer',
-                          transition: 'background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s',
+                          transition: 'background 0.25s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.25s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s cubic-bezier(0.22, 1, 0.36, 1)',
                           textAlign: 'left',
                           whiteSpace: 'nowrap',
                         }}
@@ -692,11 +696,16 @@ export function ChatBot() {
         .chat-bot-send:active:not(:disabled) {
           transform: scale(0.96);
         }
+        .chat-bot-msg, .chat-bot-typing {
+          contain: layout;
+        }
         .chat-suggestion-chip:hover {
           background: var(--bg) !important;
           border-color: var(--accent) !important;
           color: var(--accent) !important;
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+          backface-visibility: hidden;
         }
         .chat-follow-up-list::-webkit-scrollbar {
           height: 5px;
@@ -724,7 +733,7 @@ export function ChatBot() {
           }
         }
         @keyframes chat-msg-in {
-          from { opacity: 0; transform: translateY(10px) scale(0.98); }
+          from { opacity: 0; transform: translateY(8px) scale(0.99); }
           to { opacity: 1; transform: translateY(0) scale(1); }
         }
         @keyframes chat-suggestions-in {
