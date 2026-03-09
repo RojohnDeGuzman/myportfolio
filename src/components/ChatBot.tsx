@@ -60,6 +60,8 @@ export function ChatBot() {
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [pendingScrollSectionId, setPendingScrollSectionId] = useState<string | null>(null)
+  const [typewriterCompletedUpToIndex, setTypewriterCompletedUpToIndex] = useState(-1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
@@ -78,11 +80,17 @@ export function ChatBot() {
     }
   }, [open])
 
-  const close = () => setOpen(false)
+  const close = () => {
+    setOpen(false)
+    setPendingScrollSectionId(null)
+    setTypewriterCompletedUpToIndex(messages.length - 1)
+  }
 
   const clearChat = () => {
     setMessages([INITIAL_MESSAGE])
     setInput('')
+    setTypewriterCompletedUpToIndex(0)
+    setPendingScrollSectionId(null)
     inputRef.current?.focus()
   }
 
@@ -135,10 +143,7 @@ export function ChatBot() {
       setMessages((prev) => [...prev, { role: 'assistant', content }])
       const { sectionId } = parseSeeSection(content)
       if (sectionId) {
-        setTimeout(() => {
-          setOpen(false)
-          document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }, 1200)
+        setPendingScrollSectionId(sectionId)
       }
     } catch (e) {
       const err = e instanceof Error ? e.message : 'Something went wrong.'
@@ -325,8 +330,17 @@ export function ChatBot() {
             {messages.map((m, i) => {
               const isLast = i === messages.length - 1
               const isAssistantReply = m.role === 'assistant' && i > 0
-              const useTypewriter = isLast && isAssistantReply && !loading
+              const isNewAndNotYetShown = i > typewriterCompletedUpToIndex
+              const useTypewriter = isLast && isAssistantReply && !loading && isNewAndNotYetShown
               const { main } = parseSeeSection(m.content)
+              const handleTypewriterDone = () => {
+                setTypewriterCompletedUpToIndex(i)
+                if (pendingScrollSectionId) {
+                  document.getElementById(pendingScrollSectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  setOpen(false)
+                  setPendingScrollSectionId(null)
+                }
+              }
               return (
               <div
                 key={i}
@@ -348,7 +362,7 @@ export function ChatBot() {
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
                   {useTypewriter ? (
-                    <TypewriterText text={main} speed={14} />
+                    <TypewriterText text={main} speed={14} onDone={handleTypewriterDone} />
                   ) : (
                     main
                   )}
