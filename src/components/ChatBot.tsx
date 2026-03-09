@@ -504,19 +504,6 @@ export function ChatBot() {
                   }}
                 >
                   <div
-                    style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: '0.75rem',
-                      fontWeight: 600,
-                      color: 'var(--text-muted)',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.04em',
-                      marginBottom: 'var(--space-sm)',
-                    }}
-                  >
-                    Follow up
-                  </div>
-                  <div
                     className="chat-follow-up-list"
                     style={{
                       display: 'flex',
@@ -707,16 +694,28 @@ export function ChatBot() {
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
           backface-visibility: hidden;
         }
+        .chat-follow-up-list {
+          scrollbar-width: thin;
+          scrollbar-color: var(--accent) transparent;
+        }
         .chat-follow-up-list::-webkit-scrollbar {
-          height: 5px;
+          height: 6px;
+        }
+        .chat-follow-up-list::-webkit-scrollbar-button {
+          display: none;
+          width: 0;
+          height: 0;
         }
         .chat-follow-up-list::-webkit-scrollbar-track {
-          background: var(--bg);
+          background: transparent;
           border-radius: 4px;
         }
         .chat-follow-up-list::-webkit-scrollbar-thumb {
-          background: var(--border);
+          background: var(--accent);
           border-radius: 4px;
+        }
+        .chat-follow-up-list::-webkit-scrollbar-thumb:hover {
+          background: var(--accent);
         }
         @keyframes chat-backdrop-in {
           from { opacity: 0; }
