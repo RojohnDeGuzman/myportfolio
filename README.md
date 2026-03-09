@@ -32,7 +32,7 @@ The site includes a chat assistant that answers questions about the portfolio us
 
 - **Setup:** Add your Groq API key as `GROQ_API_KEY` in Vercel (Project → Settings → Environment Variables). Never commit the key; use `.env.example` as a template for local use.
 - **RAG:** The bot uses `api/knowledge.ts` — chunks from your About, Projects, How I work, Certifications, and Tech stack. On each question, the API retrieves relevant chunks and sends them to Groq so answers stay grounded in your profile.
-- **Local testing:** The chat API runs as a Vercel serverless function. To test it locally, run `npx vercel dev` instead of `npm run dev` so both the app and `/api/chat` are available.
+- **Local testing:** The chat API runs as a Vercel serverless function. Either run `npx vercel dev` so both the app and `/api/chat` run locally, or run `npm run dev` and set `VITE_CHAT_API_BASE` in `.env.local` to your Vercel URL (e.g. `https://myportfolio-lac-delta.vercel.app`) so the chat calls your deployed API.
 
 ## Stack
 
