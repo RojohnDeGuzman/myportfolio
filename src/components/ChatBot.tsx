@@ -55,12 +55,57 @@ const SUGGESTED_PROMPTS = [
   "Tell me about his certifications.",
 ]
 
+/** Follow-up prompts shown after the bot replies. Section-specific when the last reply links to a section. */
+const FOLLOW_UP_PROMPTS: string[] = [
+  "Tell me more",
+  "What are his key projects?",
+  "What technologies does he use?",
+  "How can I contact him?",
+  "What's his experience?",
+]
+
+const FOLLOW_UP_BY_SECTION: Record<string, string[]> = {
+  'tech-stack': [
+    "What projects use these technologies?",
+    "What's his experience with Python?",
+    "How can I contact him?",
+    "Tell me about his certifications.",
+  ],
+  'about': [
+    "What are his key projects?",
+    "How does he approach work?",
+    "How can I contact him?",
+    "What technologies does he use?",
+  ],
+  'how-i-work': [
+    "What are his key projects?",
+    "What's his experience?",
+    "How can I contact him?",
+  ],
+  'projects': [
+    "What technologies did he use for these?",
+    "How can I contact him?",
+    "What's his experience?",
+    "Tell me about his certifications.",
+  ],
+  'certifications': [
+    "What's his educational background?",
+    "What technologies does he use?",
+    "How can I contact him?",
+  ],
+  'contact': [
+    "What are his key projects?",
+    "What technologies does he use?",
+    "Is he open to new opportunities?",
+  ],
+  'hero': FOLLOW_UP_PROMPTS,
+}
+
 export function ChatBot() {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [pendingScrollSectionId, setPendingScrollSectionId] = useState<string | null>(null)
   const [typewriterCompletedUpToIndex, setTypewriterCompletedUpToIndex] = useState(-1)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -82,7 +127,6 @@ export function ChatBot() {
 
   const close = () => {
     setOpen(false)
-    setPendingScrollSectionId(null)
     setTypewriterCompletedUpToIndex(messages.length - 1)
   }
 
@@ -90,7 +134,6 @@ export function ChatBot() {
     setMessages([INITIAL_MESSAGE])
     setInput('')
     setTypewriterCompletedUpToIndex(0)
-    setPendingScrollSectionId(null)
     inputRef.current?.focus()
   }
 
@@ -141,10 +184,6 @@ export function ChatBot() {
       const reply = data.reply?.trim()
       const content = reply || 'No reply from the assistant.'
       setMessages((prev) => [...prev, { role: 'assistant', content }])
-      const { sectionId } = parseSeeSection(content)
-      if (sectionId) {
-        setPendingScrollSectionId(sectionId)
-      }
     } catch (e) {
       const err = e instanceof Error ? e.message : 'Something went wrong.'
       setMessages((prev) => [...prev, { role: 'assistant', content: `Sorry — ${err}` }])
@@ -332,14 +371,12 @@ export function ChatBot() {
               const isAssistantReply = m.role === 'assistant' && i > 0
               const isNewAndNotYetShown = i > typewriterCompletedUpToIndex
               const useTypewriter = isLast && isAssistantReply && !loading && isNewAndNotYetShown
-              const { main } = parseSeeSection(m.content)
-              const handleTypewriterDone = () => {
-                setTypewriterCompletedUpToIndex(i)
-                if (pendingScrollSectionId) {
-                  document.getElementById(pendingScrollSectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  setOpen(false)
-                  setPendingScrollSectionId(null)
-                }
+              const { main, sectionId } = parseSeeSection(m.content)
+              const sectionLabel = sectionId ? SECTION_LABELS[sectionId] : null
+              const handleTypewriterDone = () => setTypewriterCompletedUpToIndex(i)
+              const scrollToSection = (id: string) => {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                setOpen(false)
               }
               return (
               <div
@@ -365,6 +402,34 @@ export function ChatBot() {
                     <TypewriterText text={main} speed={14} onDone={handleTypewriterDone} />
                   ) : (
                     main
+                  )}
+                  {sectionId && sectionLabel && m.role === 'assistant' && (
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(sectionId)}
+                      className="chat-bot-section-link"
+                      style={{
+                        alignSelf: 'flex-start',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginTop: 2,
+                        padding: '4px 10px',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.8125rem',
+                        fontWeight: 600,
+                        color: 'var(--accent)',
+                        background: 'transparent',
+                        border: '1px solid var(--accent)',
+                        borderRadius: 'var(--radius)',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s, color 0.2s',
+                      }}
+                    >
+                      <span>View in portfolio</span>
+                      <span aria-hidden>→</span>
+                      <span>{sectionLabel}</span>
+                    </button>
                   )}
                 </div>
               </div>
@@ -423,6 +488,65 @@ export function ChatBot() {
                 </div>
               </div>
             )}
+
+            {/* Follow-up suggestions after bot reply */}
+            {messages.length > 1 && !loading && messages[messages.length - 1].role === 'assistant' && (() => {
+              const lastContent = messages[messages.length - 1].content
+              const { sectionId } = parseSeeSection(lastContent)
+              const prompts = sectionId && FOLLOW_UP_BY_SECTION[sectionId] ? FOLLOW_UP_BY_SECTION[sectionId] : FOLLOW_UP_PROMPTS
+              return (
+                <div
+                  className="chat-suggestions chat-follow-up"
+                  style={{
+                    animation: 'chat-suggestions-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards',
+                  }}
+                >
+                  <div
+                    style={{
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      color: 'var(--text-muted)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
+                      marginBottom: 'var(--space-sm)',
+                    }}
+                  >
+                    Follow up
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      gap: 'var(--space-sm)',
+                    }}
+                  >
+                    {prompts.map((prompt, j) => (
+                      <button
+                        key={j}
+                        type="button"
+                        onClick={() => onSuggestionClick(prompt)}
+                        className="chat-suggestion-chip"
+                        style={{
+                          padding: 'var(--space-sm) var(--space-md)',
+                          fontFamily: 'var(--font-body)',
+                          fontSize: '0.8125rem',
+                          color: 'var(--text)',
+                          background: 'var(--bg-elevated)',
+                          border: '1px solid var(--border)',
+                          borderRadius: '999px',
+                          cursor: 'pointer',
+                          transition: 'background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s',
+                          textAlign: 'left',
+                        }}
+                      >
+                        {prompt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
 
             {loading && (
               <div
@@ -553,6 +677,10 @@ export function ChatBot() {
         .chat-bot-send:hover:not(:disabled) {
           background: var(--accent-hover) !important;
           transform: scale(1.06);
+        }
+        .chat-bot-section-link:hover {
+          background: var(--accent) !important;
+          color: var(--bg) !important;
         }
         .chat-bot-send:active:not(:disabled) {
           transform: scale(0.96);
