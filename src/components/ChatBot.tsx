@@ -44,7 +44,7 @@ const CHAT_API = `${import.meta.env.VITE_CHAT_API_BASE ?? ''}/api/chat`
 
 const INITIAL_MESSAGE: Message = {
   role: 'assistant',
-  content: "Hey! I'm here to help you get to know Rojohn — his work, skills, projects, or just how to reach him. Pick a prompt below or ask me anything!",
+  content: "Hey! I'm here to help you get to know Rojohn, his work, skills, projects, or just how to reach him. Pick a prompt below or ask me anything!",
 }
 
 const SUGGESTED_PROMPTS = [
@@ -131,7 +131,15 @@ export function ChatBot() {
         )
       }
       const reply = data.reply?.trim()
-      setMessages((prev) => [...prev, { role: 'assistant', content: reply || 'No reply from the assistant.' }])
+      const content = reply || 'No reply from the assistant.'
+      setMessages((prev) => [...prev, { role: 'assistant', content }])
+      const { sectionId } = parseSeeSection(content)
+      if (sectionId) {
+        setTimeout(() => {
+          setOpen(false)
+          document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+        }, 1200)
+      }
     } catch (e) {
       const err = e instanceof Error ? e.message : 'Something went wrong.'
       setMessages((prev) => [...prev, { role: 'assistant', content: `Sorry — ${err}` }])
@@ -318,12 +326,7 @@ export function ChatBot() {
               const isLast = i === messages.length - 1
               const isAssistantReply = m.role === 'assistant' && i > 0
               const useTypewriter = isLast && isAssistantReply && !loading
-              const { main, sectionId } = parseSeeSection(m.content)
-              const sectionLabel = sectionId ? SECTION_LABELS[sectionId] : null
-              const scrollToSection = (id: string) => {
-                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                setOpen(false)
-              }
+              const { main } = parseSeeSection(m.content)
               return (
               <div
                 key={i}
@@ -348,34 +351,6 @@ export function ChatBot() {
                     <TypewriterText text={main} speed={14} />
                   ) : (
                     main
-                  )}
-                  {sectionId && sectionLabel && m.role === 'assistant' && (
-                    <button
-                      type="button"
-                      onClick={() => scrollToSection(sectionId)}
-                      className="chat-bot-section-link"
-                      style={{
-                        alignSelf: 'flex-start',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 6,
-                        marginTop: 2,
-                        padding: '4px 10px',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.8125rem',
-                        fontWeight: 600,
-                        color: 'var(--accent)',
-                        background: 'transparent',
-                        border: '1px solid var(--accent)',
-                        borderRadius: 'var(--radius)',
-                        cursor: 'pointer',
-                        transition: 'background 0.2s, color 0.2s',
-                      }}
-                    >
-                      <span>View in portfolio</span>
-                      <span aria-hidden>→</span>
-                      <span>{sectionLabel}</span>
-                    </button>
                   )}
                 </div>
               </div>
@@ -564,10 +539,6 @@ export function ChatBot() {
         .chat-bot-send:hover:not(:disabled) {
           background: var(--accent-hover) !important;
           transform: scale(1.06);
-        }
-        .chat-bot-section-link:hover {
-          background: var(--accent) !important;
-          color: var(--bg) !important;
         }
         .chat-bot-send:active:not(:disabled) {
           transform: scale(0.96);
