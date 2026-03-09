@@ -489,8 +489,8 @@ export function ChatBot() {
               </div>
             )}
 
-            {/* Follow-up suggestions after bot reply */}
-            {messages.length > 1 && !loading && messages[messages.length - 1].role === 'assistant' && (() => {
+            {/* Follow-up suggestions after bot reply — only when typing is done */}
+            {messages.length > 1 && !loading && messages[messages.length - 1].role === 'assistant' && typewriterCompletedUpToIndex >= messages.length - 1 && (() => {
               const lastContent = messages[messages.length - 1].content
               const { sectionId } = parseSeeSection(lastContent)
               const prompts = sectionId && FOLLOW_UP_BY_SECTION[sectionId] ? FOLLOW_UP_BY_SECTION[sectionId] : FOLLOW_UP_PROMPTS
@@ -515,10 +515,15 @@ export function ChatBot() {
                     Follow up
                   </div>
                   <div
+                    className="chat-follow-up-list"
                     style={{
                       display: 'flex',
-                      flexWrap: 'wrap',
+                      flexDirection: 'row',
+                      flexWrap: 'nowrap',
                       gap: 'var(--space-sm)',
+                      overflowX: 'auto',
+                      paddingBottom: 4,
+                      scrollbarGutter: 'stable',
                     }}
                   >
                     {prompts.map((prompt, j) => (
@@ -528,6 +533,7 @@ export function ChatBot() {
                         onClick={() => onSuggestionClick(prompt)}
                         className="chat-suggestion-chip"
                         style={{
+                          flexShrink: 0,
                           padding: 'var(--space-sm) var(--space-md)',
                           fontFamily: 'var(--font-body)',
                           fontSize: '0.8125rem',
@@ -538,6 +544,7 @@ export function ChatBot() {
                           cursor: 'pointer',
                           transition: 'background 0.2s, border-color 0.2s, color 0.2s, transform 0.15s',
                           textAlign: 'left',
+                          whiteSpace: 'nowrap',
                         }}
                       >
                         {prompt}
@@ -690,6 +697,17 @@ export function ChatBot() {
           border-color: var(--accent) !important;
           color: var(--accent) !important;
           transform: translateY(-1px);
+        }
+        .chat-follow-up-list::-webkit-scrollbar {
+          height: 5px;
+        }
+        .chat-follow-up-list::-webkit-scrollbar-track {
+          background: var(--bg);
+          border-radius: 4px;
+        }
+        .chat-follow-up-list::-webkit-scrollbar-thumb {
+          background: var(--border);
+          border-radius: 4px;
         }
         @keyframes chat-backdrop-in {
           from { opacity: 0; }
