@@ -1,16 +1,39 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
 const MODEL = 'llama-3.1-8b-instant'
 
-const SYSTEM_PROMPT = `You are the portfolio assistant for Rojohn Michael De Guzman. You help visitors learn about Rojohn's experience, projects, skills, and how to contact him. Answer only based on the context below. When the context includes a "Common question" and "Answer" that matches what the user asked, use that answer as the main source and keep the wording close to it. Be concise, professional, and friendly. If the question is out of scope or you don't have enough context, say so and suggest they check the portfolio sections or contact Rojohn directly. Do not make up details.`
+const SYSTEM_PROMPT = `You are Rojohn's portfolio assistant — a fun, helpful, and human-like buddy who helps visitors get to know Rojohn and his work. Your personality: warm, conversational, and a little playful when it fits. Use a friendly tone (like a helpful colleague), not stiff or corporate. You can start replies with things like "Sure!", "Great question.", "So..." or "Honestly?" when it feels natural. Keep answers concise but lively; it's okay to crack a light joke or use a casual phrase if it fits. Never make up facts — answer only from the context below. When the context includes a "Common question" and "Answer", use that answer as the main source and keep the wording close. If you don't have enough context, say so and suggest they check the portfolio or contact Rojohn directly.
 
-// RAG knowledge: static chunks inlined; FAQ loaded from api/faq-questions.json + api/faq-answers.json
-// (Run "npm run faq" to be asked each question and save your answers.)
-import questions from './faq-questions.json'
-import answers from './faq-answers.json'
+When your answer is based on a specific section of the portfolio, add at the end exactly one line on its own: (See: #SECTION_ID) so the user can jump to that section on the page. Use only these section IDs: tech-stack (for skills, technologies, tools), about (for background, experience), how-i-work (for work style, approach), projects (for projects), certifications (for certifications), contact (for contact info, email, LinkedIn). Only add (See: #SECTION_ID) when it clearly matches what they asked; do not add it for general or multi-topic answers.`
+
+// RAG knowledge: static chunks inlined; FAQ loaded at runtime from api/faq-questions.json + api/faq-answers.json
+// (Run "npm run faq" to be asked each question and save your answers.) No import of knowledge.ts or faq.ts.
+function loadFaqChunks(): { id: string; section: string; text: string }[] {
+  try {
+    const dir = join(process.cwd(), 'api')
+    const questions = JSON.parse(readFileSync(join(dir, 'faq-questions.json'), 'utf8')) as string[]
+    const answers = JSON.parse(readFileSync(join(dir, 'faq-answers.json'), 'utf8')) as string[]
+    return questions.map((q: string, i: number) => ({
+      id: `faq-${i + 1}`,
+      section: 'faq',
+      text: `Common question: ${q} Answer: ${answers[i] || ''}`,
+    }))
+  } catch {
+    return []
+  }
+}
+
+const faqChunks = loadFaqChunks()
 
 const STATIC_KNOWLEDGE_CHUNKS: { id: string; section: string; text: string }[] = [
+  // Personal details (edit these to match Rojohn — or add more via FAQ)
+  { id: 'personal-1', section: 'personal', text: 'Rojohn Michael De Guzman. Full name for formal use; he goes by Rojohn. Based in San Pedro, Laguna (GSIS Village), Philippines. Filipino. Contact: rojohn1123@gmail.com, +63 921 794 2076, LinkedIn: Rojohn Michael De Guzman.' },
+  { id: 'personal-2', section: 'personal', text: 'Personal vibe: Rojohn likes building things that actually help people — automations, tools, and clear processes. He enjoys problem-solving and making day-to-day work easier for teams. Outside work he values continuous learning, especially in AI and tech.' },
+  { id: 'personal-3', section: 'personal', text: 'Fun / human details: He has a BS in Computer Science and has been in IT and support for over 5 years. When not coding or fixing things, he’s likely exploring new tools or ideas to improve how people work. (Add your own hobbies or fun facts by running npm run faq or editing the FAQ answers.)' },
+  // Hero / intro
   { id: 'hero-1', section: 'intro', text: 'Rojohn Michael De Guzman. Experience in building automations and AI solutions that make IT and operations more efficient, innovative and adaptive to evolving AI and business needs.' },
   { id: 'about-1', section: 'about', text: 'Rojohn has hands-on experience designing and building internal tools, automation workflows, and websites that improve operational efficiency. He focuses on creating clear processes, minimizing errors, and enabling teams to work smarter through solutions such as AI, ticketing systems, and streamlined cross-team coordination.' },
   { id: 'about-2', section: 'about', text: 'He has experience with ticketing systems and remote-support tools, and handles both hardware and software. His experience as technical support, together with a background in programming and a BS in Computer Science, drives him to keep deepening his skills in innovation and automation to deliver process improvements and adapt to modern IT trends.' },
@@ -33,11 +56,6 @@ const STATIC_KNOWLEDGE_CHUNKS: { id: string; section: string; text: string }[] =
   { id: 'resume-refs', section: 'resume', text: 'Resume — References: Juan Rafael Dela Fuente (+63 919 071 3639), Christopher Gomez (+63 917 875 2031).' },
 ]
 
-const faqChunks = (questions as string[]).map((q: string, i: number) => ({
-  id: `faq-${i + 1}`,
-  section: 'faq',
-  text: `Common question: ${q} Answer: ${(answers as string[])[i] || ''}`,
-}))
 const KNOWLEDGE_CHUNKS = [...STATIC_KNOWLEDGE_CHUNKS, ...faqChunks]
 
 function retrieveChunks(query: string, k = 5): { id: string; section: string; text: string }[] {
@@ -102,7 +120,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         model: MODEL,
         messages,
         max_tokens: 512,
-        temperature: 0.4,
+        temperature: 0.55,
       }),
     })
 

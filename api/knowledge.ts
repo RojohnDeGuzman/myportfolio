@@ -1,11 +1,27 @@
 /**
  * RAG knowledge base: chunks from Rojohn's portfolio (About, Projects, How I work, Certifications, Tech)
- * and from his resume (RojohnMichaelDeGuzman.pdf). Includes FAQ (api/faq.ts) for common Q&A.
+ * personal details, and from his resume. Includes FAQ (api/faq.ts) for common Q&A.
  */
 import { faqToChunks } from './faq'
 export type KnowledgeChunk = { id: string; section: string; text: string }
 
 export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
+  // Personal details
+  {
+    id: 'personal-1',
+    section: 'personal',
+    text: 'Rojohn Michael De Guzman. Full name for formal use; he goes by Rojohn. Based in San Pedro, Laguna (GSIS Village), Philippines. Filipino. Contact: rojohn1123@gmail.com, +63 921 794 2076, LinkedIn: Rojohn Michael De Guzman.',
+  },
+  {
+    id: 'personal-2',
+    section: 'personal',
+    text: 'Personal vibe: Rojohn likes building things that actually help people — automations, tools, and clear processes. He enjoys problem-solving and making day-to-day work easier for teams. Outside work he values continuous learning, especially in AI and tech.',
+  },
+  {
+    id: 'personal-3',
+    section: 'personal',
+    text: 'Fun / human details: He has a BS in Computer Science and has been in IT and support for over 5 years. When not coding or fixing things, he’s likely exploring new tools or ideas to improve how people work. (Add your own hobbies or fun facts via FAQ or npm run faq.)',
+  },
   // Hero / intro
   {
     id: 'hero-1',

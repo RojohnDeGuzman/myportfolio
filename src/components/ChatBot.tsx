@@ -17,11 +17,34 @@ function TypewriterText({ text, speed = 18, onDone }: { text: string; speed?: nu
   return <>{text.slice(0, revealed)}{!isDone && <span className="chat-bot-caret" aria-hidden />}</>
 }
 
+/** Section IDs on the portfolio page → display label for "View in portfolio" link */
+const SECTION_LABELS: Record<string, string> = {
+  'tech-stack': 'Tech Stack',
+  'about': 'About',
+  'how-i-work': 'How I Work',
+  'projects': 'Projects',
+  'certifications': 'Certifications',
+  'contact': 'Contact',
+  'hero': 'Hero',
+}
+
+/** Parses (See: #section-id) from the end of a message; returns main text and optional section id */
+function parseSeeSection(content: string): { main: string; sectionId: string | null } {
+  const match = content.match(/\s*\(See:\s*#([a-z0-9-]+)\)\s*$/i)
+  if (!match) return { main: content.trim(), sectionId: null }
+  const sectionId = match[1].toLowerCase()
+  if (!SECTION_LABELS[sectionId]) return { main: content.trim(), sectionId: null }
+  return {
+    main: content.slice(0, match.index).trim(),
+    sectionId,
+  }
+}
+
 const CHAT_API = `${import.meta.env.VITE_CHAT_API_BASE ?? ''}/api/chat`
 
 const INITIAL_MESSAGE: Message = {
   role: 'assistant',
-  content: "Hi! I'm Rojohn's portfolio assistant. Pick a prompt below or type your own question.",
+  content: "Hey! I'm here to help you get to know Rojohn — his work, skills, projects, or just how to reach him. Pick a prompt below or ask me anything!",
 }
 
 const SUGGESTED_PROMPTS = [
@@ -295,6 +318,12 @@ export function ChatBot() {
               const isLast = i === messages.length - 1
               const isAssistantReply = m.role === 'assistant' && i > 0
               const useTypewriter = isLast && isAssistantReply && !loading
+              const { main, sectionId } = parseSeeSection(m.content)
+              const sectionLabel = sectionId ? SECTION_LABELS[sectionId] : null
+              const scrollToSection = (id: string) => {
+                document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                setOpen(false)
+              }
               return (
               <div
                 key={i}
@@ -314,11 +343,41 @@ export function ChatBot() {
                   ...(isLast ? { animation: 'chat-msg-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) forwards' } : {}),
                 }}
               >
-                {useTypewriter ? (
-                  <TypewriterText text={m.content} speed={14} />
-                ) : (
-                  m.content
-                )}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
+                  {useTypewriter ? (
+                    <TypewriterText text={main} speed={14} />
+                  ) : (
+                    main
+                  )}
+                  {sectionId && sectionLabel && m.role === 'assistant' && (
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection(sectionId)}
+                      className="chat-bot-section-link"
+                      style={{
+                        alignSelf: 'flex-start',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 6,
+                        marginTop: 2,
+                        padding: '4px 10px',
+                        fontFamily: 'var(--font-body)',
+                        fontSize: '0.8125rem',
+                        fontWeight: 600,
+                        color: 'var(--accent)',
+                        background: 'transparent',
+                        border: '1px solid var(--accent)',
+                        borderRadius: 'var(--radius)',
+                        cursor: 'pointer',
+                        transition: 'background 0.2s, color 0.2s',
+                      }}
+                    >
+                      <span>View in portfolio</span>
+                      <span aria-hidden>→</span>
+                      <span>{sectionLabel}</span>
+                    </button>
+                  )}
+                </div>
               </div>
             )})}
 
@@ -505,6 +564,10 @@ export function ChatBot() {
         .chat-bot-send:hover:not(:disabled) {
           background: var(--accent-hover) !important;
           transform: scale(1.06);
+        }
+        .chat-bot-section-link:hover {
+          background: var(--accent) !important;
+          color: var(--bg) !important;
         }
         .chat-bot-send:active:not(:disabled) {
           transform: scale(0.96);
