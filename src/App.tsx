@@ -9,6 +9,7 @@ import { Contact } from './components/Contact'
 import { ScrollProgress } from './components/ScrollProgress'
 import { BackgroundEffects } from './components/BackgroundEffects'
 import { FloatingContactButton } from './components/FloatingContactButton'
+import { ChatBot } from './components/ChatBot'
 import { CookieNotice } from './components/CookieNotice'
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
       <ScrollProgress />
       <Header />
       <FloatingContactButton />
+      <ChatBot />
       <CookieNotice />
       <main style={{ position: 'relative', zIndex: 1 }}>
         <Hero />

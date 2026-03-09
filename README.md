@@ -26,7 +26,16 @@ npm run preview
 - **Contact:** Email and links in `src/components/Contact.tsx`
 - **Accent color:** Change `--accent` and `--accent-hover` in `src/index.css`
 
+## Chat bot (Groq + RAG)
+
+The site includes a chat assistant that answers questions about the portfolio using your **Groq** API key and **RAG** (retrieval over your profile content).
+
+- **Setup:** Add your Groq API key as `GROQ_API_KEY` in Vercel (Project → Settings → Environment Variables). Never commit the key; use `.env.example` as a template for local use.
+- **RAG:** The bot uses `api/knowledge.ts` — chunks from your About, Projects, How I work, Certifications, and Tech stack. On each question, the API retrieves relevant chunks and sends them to Groq so answers stay grounded in your profile.
+- **Local testing:** The chat API runs as a Vercel serverless function. To test it locally, run `npx vercel dev` instead of `npm run dev` so both the app and `/api/chat` are available.
+
 ## Stack
 
 - Vite + React + TypeScript
 - No UI framework — custom CSS with design tokens
+- Chat bot: Groq (LLM) + RAG over portfolio content (`api/chat`, `api/knowledge.ts`)
