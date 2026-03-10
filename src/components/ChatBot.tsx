@@ -241,15 +241,18 @@ export function ChatBot() {
         }}
       >
         <span aria-hidden className="chat-bot-trigger-icon" style={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          {open ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 6 6 18M6 6l12 12" />
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-          )}
+          <span className="chat-bot-trigger-icon-svg">
+            {open ? (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6 6 18M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+              </svg>
+            )}
+          </span>
+          <span className="chat-bot-trigger-icon-emoji" aria-hidden>{open ? '×' : '💬'}</span>
         </span>
       </button>
 
@@ -691,6 +694,18 @@ export function ChatBot() {
           height: 24px !important;
           flex-shrink: 0;
         }
+        .chat-bot-trigger-icon-svg {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .chat-bot-trigger-icon-emoji {
+          display: none;
+          font-size: 1.35rem;
+          line-height: 1;
+          align-items: center;
+          justify-content: center;
+        }
         .chat-bot-trigger-icon svg {
           width: 24px !important;
           height: 24px !important;
@@ -829,6 +844,12 @@ export function ChatBot() {
             height: 24px !important;
             min-width: 24px !important;
             min-height: 24px !important;
+          }
+          .chat-bot-trigger .chat-bot-trigger-icon-svg {
+            display: none !important;
+          }
+          .chat-bot-trigger .chat-bot-trigger-icon-emoji {
+            display: flex !important;
           }
           .chat-bot-trigger:not([aria-expanded="true"]):hover {
             transform: scale(1.05) !important;
