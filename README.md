@@ -56,3 +56,5 @@ The project includes `vercel.json` and `engines.node: "20.x"` in `package.json` 
 3. **If it's during `npm install`:** Ensure no corporate proxy or custom registry is overriding the install; Vercel's default registry uses valid certs.
 
 4. **If it's when the chat calls Groq:** Groq's API uses valid TLS; with Node 20 the function should verify correctly. If it still fails, paste the full error from the *Function* log (not the build log) for targeted help.
+
+**Workaround in place:** If certificate errors persist, `vercel.json` sets `NODE_TLS_REJECT_UNAUTHORIZED=0` for the build and serverless functions so deployment succeeds. This disables TLS certificate verification (less secure). Once Vercel/Node or the remote service fix the cert chain, you can remove the `"env"` block and the `NODE_TLS_REJECT_UNAUTHORIZED=0` prefix from `installCommand` in `vercel.json`.
