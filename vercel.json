@@ -3,9 +3,6 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "installCommand": "NODE_TLS_REJECT_UNAUTHORIZED=0 npm install",
-  "functions": {
-    "api/*.ts": {}
-  },
   "env": {
     "NODE_TLS_REJECT_UNAUTHORIZED": "0"
   }
