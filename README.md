@@ -39,3 +39,20 @@ The site includes a chat assistant that answers questions about the portfolio us
 - Vite + React + TypeScript
 - No UI framework — custom CSS with design tokens
 - Chat bot: Groq (LLM) + RAG over portfolio content (`api/chat`, `api/knowledge.ts`)
+
+## Deploy on Vercel
+
+The project includes `vercel.json` and `engines.node: "20.x"` in `package.json` so builds and serverless functions use Node 20 (updated TLS certificates).
+
+**If you see a certificate error during deploy:**
+
+1. **Check the exact error** in Vercel → your project → Deployments → click the failed deployment → Build or Function logs. Common messages:
+   - `UNABLE_TO_VERIFY_LEAF_SIGNATURE` / `unable to verify the first certificate` — often fixed by using Node 20 (already set above).
+   - `certificate has expired` — the *remote* server (e.g. npm registry or Groq) had an expired cert; usually resolved by them or by retrying later.
+   - `CERT_HAS_EXPIRED` — same as above.
+
+2. **Force Node 20 in Vercel:** In the dashboard go to Project → **Settings** → **General** → **Node.js Version** and choose **20.x** if it's not already.
+
+3. **If it's during `npm install`:** Ensure no corporate proxy or custom registry is overriding the install; Vercel's default registry uses valid certs.
+
+4. **If it's when the chat calls Groq:** Groq's API uses valid TLS; with Node 20 the function should verify correctly. If it still fails, paste the full error from the *Function* log (not the build log) for targeted help.
