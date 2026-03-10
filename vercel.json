@@ -4,9 +4,7 @@
   "framework": "vite",
   "installCommand": "NODE_TLS_REJECT_UNAUTHORIZED=0 npm install",
   "functions": {
-    "api/*.ts": {
-      "runtime": "@vercel/node@3"
-    }
+    "api/*.ts": {}
   },
   "env": {
     "NODE_TLS_REJECT_UNAUTHORIZED": "0"
