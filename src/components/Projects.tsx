@@ -52,6 +52,19 @@ Next.js (App Router), React, TypeScript, and Tailwind CSS for a fast, responsive
     tags: ['Web', 'Design', 'Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'SEO', 'UI/UX'],
     href: '#',
   },
+  {
+    title: 'Seat Reservation Tool',
+    description:
+      'A lightweight internal web application used to reserve office seats and hot desks by date and time window, helping teams coordinate shared workspaces and avoid double-booking.',
+    builtFor: 'Shared seating · Office operations',
+    details: `Core purpose
+Prevent conflicts by ensuring the same seat is not booked for overlapping time ranges. Improve visibility by showing who is sitting where and for which time window, across both layout and map views. Support shared seating by allowing multiple bookings per hot desk on the same day as long as time windows do not overlap.
+
+Application
+Single-page style UI built with plain HTML, CSS, and JavaScript for rendering seat tiles, filters, and booking modals. A Node.js and Express API handles authentication and reservation CRUD with role checks on protected endpoints. Uses SQLite to store users, reservations, and layout metadata. Includes admin tools for managing the seat map, tile placement and labels, permanent seat flags, and user access, with persistent layout data reused across sessions.`,
+    tags: ['Internal Tool', 'Scheduling', 'Hot Desking', 'Seat Map', 'Node.js', 'Express', 'SQLite', 'JWT', 'Admin'],
+    href: '#',
+  },
 ]
 
 export function Projects() {

@@ -76,11 +76,16 @@ export const KNOWLEDGE_CHUNKS: KnowledgeChunk[] = [
     section: 'projects',
     text: 'Company Website Redesign: Redesigned and built a corporate website as a modern, fast, maintainable Next.js application. Next.js (App Router), React, TypeScript, Tailwind CSS. Improved SEO, security, and UI/UX. Tags: Web, Design, Next.js, React, TypeScript, Tailwind CSS, SEO, UI/UX.',
   },
+  {
+    id: 'proj-5',
+    section: 'projects',
+    text: 'Seat Reservation Tool: Lightweight internal web app to reserve office seats and hot desks by date and time window, preventing double-booking. Includes layout and floor map views, overlap validation, booking workflow, overview stats, reservations lists, and admin tools to manage seat map tiles and user access. Frontend built with HTML/CSS/JavaScript, backend with Node.js + Express, SQLite database, and JWT auth with role-based permissions. Tags: Internal Tool, Scheduling, Hot Desking, Seat Map, Node.js, Express, SQLite, JWT, Admin.',
+  },
   // Certifications
   {
     id: 'cert-1',
     section: 'certifications',
-    text: 'Certifications: Machine Learning using Python (Simplilearn/SkillUp); Introduction to ITIL® 4 Foundation (Simplilearn/SkillUp); Digital Security Fundamentals - IT Safety & Security Essentials (Simplilearn/SkillUp); HP Customer Self-Repair Program and Basic Troubleshooting (Phil-Data Business Systems, Inc., Oct 2025).',
+    text: 'Certifications: Machine Learning using Python (Simplilearn/SkillUp); Introduction to ITIL® 4 Foundation (Simplilearn/SkillUp); Digital Security Fundamentals - IT Safety & Security Essentials (Simplilearn/SkillUp); System Administration and IT Infrastructure Services (Google/Coursera, Mar 2026); The Microsoft 365 Ecosystem (Microsoft/Coursera, Mar 2026); HP Customer Self-Repair Program and Basic Troubleshooting (Phil-Data Business Systems, Inc., Oct 2025).',
   },
   // Technical skills (from TechStack)
   {
